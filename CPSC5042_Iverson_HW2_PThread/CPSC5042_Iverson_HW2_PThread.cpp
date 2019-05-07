@@ -1,11 +1,7 @@
-// CPSC5042_Iverson_HW2_PThread.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
-#include "pch.h"
 #include <iostream>
-#include <string>
-#include <vector>
+#include <cstdlib>
 #include <pthread.h>
+#include <vector>
 
 using namespace std;
 
@@ -15,82 +11,123 @@ int averageVal = 0;
 int maxVal = 0;
 int minVal = 0;
 
-
-void *Average(void *numbers);
-void *Max(void *numbers);
-void *Min(void *numbers);
-
 struct thread_data {
+	int  thread_id;
 	vector<int> numbers;
 };
 
-int main()
+void *Average(void *threadarg) {
+
+	// reference to my struct that is being passed by my thread
+	struct thread_data *threadData;
+	threadData = (struct thread_data *) threadarg;
+	int sum = 0;
+
+	vector<int> nums = threadData->numbers;
+
+	for (int i = 0; i < nums.size(); i++)
+	{
+		sum += nums[i];
+	}
+
+
+	cout << "SUM:" << sum << endl;
+	cout << "SIZE: " << nums.size() << endl;
+
+	averageVal = sum / nums.size();
+
+
+	pthread_exit(NULL);
+}
+
+
+void *Max(void *threadarg)
 {
+	struct thread_data *threadData;
+	threadData = (struct thread_data *) threadarg;
+
+	vector<int> nums = threadData->numbers;
+	int currentMax = nums[0];
+
+	for (int i = 0; i < nums.size(); i++)
+	{
+		if (currentMax < nums[i]) {
+			currentMax = nums[i];
+		}
+	}
+
+	maxVal = currentMax;
+
+	pthread_exit(NULL);
+}
+
+void *Min(void *threadarg)
+{
+	struct thread_data *threadData;
+	threadData = (struct thread_data *) threadarg;
+
+	vector<int> nums = threadData->numbers;
+	int currentMin = nums[0];
+
+	for (int i = 0; i < nums.size(); i++)
+	{
+		if (currentMin > nums[i])
+		{
+			currentMin = nums[i];
+		}
+	}
+
+	minVal = currentMin;
+	pthread_exit(NULL);
+}
+
+
+int main(int argc, char** argv) {
+
+	if (argc <= 1)
+	{
+		cout << "ERROR: Please provide additional arguments" << endl;
+		return -1;
+	}
+
+	for (int i = 1; i < argc; i++)
+	{
+		if (atoi(argv[i]) < 0) {
+			cout << "Cannot handle negative number: " << atoi(argv[i]) << endl;
+			return -1;
+		}
+	}
+
 	pthread_t threads[NUM_THREADS];
 	struct thread_data td[NUM_THREADS];
-
 	vector<int> vect;
 
-	vect.push_back(10);
-	vect.push_back(20);
-	vect.push_back(30);
+	for (int i = 1; i < argc; i++)
+	{
+		vect.push_back(atoi(argv[i]));
+	}
 
+	td[0].thread_id = 0;
 	td[0].numbers = vect;
+	td[1].thread_id = 1;
+	td[1].numbers = vect;
+	td[2].thread_id = 2;
+	td[2].numbers = vect;
+
 
 	pthread_create(&threads[0], NULL, Average, (void *)&td[0]);
-	//pthread_create(&threads[1], NULL, Min, my_vector);
-	//pthread_create(&threads[2], NULL, Max, my_vector);
+	pthread_create(&threads[1], NULL, Max, (void *)&td[1]);
+	pthread_create(&threads[2], NULL, Min, (void *)&td[2]);
+
+	pthread_join(threads[0], NULL);
+	pthread_join(threads[1], NULL);
+	pthread_join(threads[2], NULL);
+
+	cout << "Average Value: " << averageVal << endl;
+	cout << "MAX Value: " << maxVal << endl;
+	cout << "MIN Value: " << minVal << endl;
 
 
-	cout << "AVERAGE: " << averageVal;
-	//cout << "Max: " << maxVal;
-	//cout << "Min: " << minVal;
 
-	return 0;
+	pthread_exit(NULL);
 }
-
-void *Average(void *numbers)
-{
-	struct thread_data *my_data;
-	my_data = (struct thread_data *) numbers;
-
-
-	// initial variable to hold the sum in.
-	int sum = 0;
-	for (size_t i = 0; i < my_data->numbers.size(); i++)
-	{
-		sum += my_data->numbers[i];
-	}
-	averageVal = sum / my_data->numbers.size();
-	pthread_exit(0);
-}
-
-//void *Max(void *numbers)
-//{
-//	int currentMax = numbers[0];
-//
-//	for (size_t i = 0; i < numbers.size(); i++)
-//	{
-//		if (currentMax < numbers[i]) {
-//			currentMax = numbers[i];
-//		}
-//	}
-//	maxVal = currentMax;
-//	pthread.exit(0);
-//}
-//
-//void *Min(void *numbers)
-//{
-//	// initial variable to hold the sum in.
-//	int currentMin = numbers[0];
-//
-//	for (size_t i = 0; i < numbers.size(); i++)
-//	{
-//		if (currentMin > numbers[i])
-//		{
-//			currentMin = numbers[i];
-//		}
-//	}
-//	minVal = currentMin;
-//	pthread.exit(0);
-//}
