@@ -26,7 +26,6 @@ struct thread_data {
 
 int main()
 {
-	vector<int> my_vector;
 	pthread_t threads[NUM_THREADS];
 	struct thread_data td[NUM_THREADS];
 
@@ -58,7 +57,7 @@ void *Average(void *numbers)
 		sum += my_data->numbers[i];
 	}
 	averageVal = sum / my_data->numbers.size();
-	pthread.exit(0);
+	pthread_exit(0);
 }
 
 //void *Max(void *numbers)
