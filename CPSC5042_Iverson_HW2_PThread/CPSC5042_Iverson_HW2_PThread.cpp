@@ -30,14 +30,14 @@ int main()
 	pthread_t threads[NUM_THREADS];
 	struct thread_data td[NUM_THREADS];
 
-	td[0].numbers = vector<int>{ 1, 2, 3, 4, 5 };
+	vector<int> my_vector{ 10, 20, 30 };
+	td[0].numbers = my_vector;
 
 	pthread_create(&threads[0], NULL, Average, (void *)&td[0]);
 	//pthread_create(&threads[1], NULL, Min, my_vector);
 	//pthread_create(&threads[2], NULL, Max, my_vector);
 
 
-	my_vector = { 2, 4, 16, 1, 10 };
 	cout << "AVERAGE: " << averageVal;
 	//cout << "Max: " << maxVal;
 	//cout << "Min: " << minVal;
