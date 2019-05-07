@@ -29,8 +29,13 @@ int main()
 	pthread_t threads[NUM_THREADS];
 	struct thread_data td[NUM_THREADS];
 
-	vector<int> my_vector{ 10, 20, 30 };
-	td[0].numbers = my_vector;
+	vector<int> vect;
+
+	vect.push_back(10);
+	vect.push_back(20);
+	vect.push_back(30);
+
+	td[0].numbers = vect;
 
 	pthread_create(&threads[0], NULL, Average, (void *)&td[0]);
 	//pthread_create(&threads[1], NULL, Min, my_vector);
