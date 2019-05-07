@@ -16,67 +16,77 @@ int maxVal = 0;
 int minVal = 0;
 
 
-void *Average(vector<int> numbers);
-void *Max(vector<int> numbers);
-void *Min(vector<int> numbers);
+void *Average(void *numbers);
+void *Max(void *numbers);
+void *Min(void *numbers);
 
+struct thread_data {
+	vector<int> numbers;
+};
 
 int main()
 {
 	vector<int> my_vector;
 	pthread_t threads[NUM_THREADS];
+	struct thread_data td[NUM_THREADS];
 
-	pthread_create(&threads[0], NULL, Average, my_vector);
-	pthread_create(&threads[1], NULL, Min, my_vector);
-	pthread_create(&threads[2], NULL, Max, my_vector);
+	td[0].numbers = vector<int>{ 1, 2, 3, 4, 5 };
+
+	pthread_create(&threads[0], NULL, Average, (void *)&td[0]);
+	//pthread_create(&threads[1], NULL, Min, my_vector);
+	//pthread_create(&threads[2], NULL, Max, my_vector);
 
 
 	my_vector = { 2, 4, 16, 1, 10 };
 	cout << "AVERAGE: " << averageVal;
-	cout << "Max: " << maxVal;
-	cout << "Min: " << minVal;
+	//cout << "Max: " << maxVal;
+	//cout << "Min: " << minVal;
 
 	return 0;
 }
 
-void *Average(vector<int> numbers)
+void *Average(void *numbers)
 {
+	struct thread_data *my_data;
+	my_data = (struct thread_data *) numbers;
+
+
 	// initial variable to hold the sum in.
 	int sum = 0;
-	for (size_t i = 0; i < numbers.size(); i++)
+	for (size_t i = 0; i < my_data->numbers.size(); i++)
 	{
-		sum += numbers[i];
+		sum += my_data->numbers[i];
 	}
-	averageVal = sum / numbers.size();
+	averageVal = sum / my_data->numbers.size();
 	pthread.exit(0);
 }
 
-void *Max(vector<int> numbers)
-{
-	int currentMax = numbers[0];
-
-	for (size_t i = 0; i < numbers.size(); i++)
-	{
-		if (currentMax < numbers[i]) {
-			currentMax = numbers[i];
-		}
-	}
-	maxVal = currentMax;
-	pthread.exit(0);
-}
-
-void *Min(vector<int> numbers)
-{
-	// initial variable to hold the sum in.
-	int currentMin = numbers[0];
-
-	for (size_t i = 0; i < numbers.size(); i++)
-	{
-		if (currentMin > numbers[i])
-		{
-			currentMin = numbers[i];
-		}
-	}
-	minVal = currentMin;
-	pthread.exit(0);
-}
+//void *Max(void *numbers)
+//{
+//	int currentMax = numbers[0];
+//
+//	for (size_t i = 0; i < numbers.size(); i++)
+//	{
+//		if (currentMax < numbers[i]) {
+//			currentMax = numbers[i];
+//		}
+//	}
+//	maxVal = currentMax;
+//	pthread.exit(0);
+//}
+//
+//void *Min(void *numbers)
+//{
+//	// initial variable to hold the sum in.
+//	int currentMin = numbers[0];
+//
+//	for (size_t i = 0; i < numbers.size(); i++)
+//	{
+//		if (currentMin > numbers[i])
+//		{
+//			currentMin = numbers[i];
+//		}
+//	}
+//	minVal = currentMin;
+//	pthread.exit(0);
+//}
